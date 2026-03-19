@@ -24,7 +24,7 @@ env:
 jobs:
   validate:
     name: Validate Version
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     outputs:
       tag: ${{ steps.check.outputs.tag }}
     steps:
@@ -57,7 +57,7 @@ jobs:
 
   web:
     name: Build Web Dashboard
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
@@ -76,7 +76,7 @@ jobs:
 
   release-notes:
     name: Generate Release Notes
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     outputs:
       notes: ${{ steps.notes.outputs.body }}
     steps:
@@ -173,12 +173,12 @@ jobs:
             target: aarch64-apple-darwin
             artifact: zeroclaw
             ext: tar.gz
-          - os: ubuntu-latest
+          - os: ubuntu-22.04
             target: aarch64-linux-android
             artifact: zeroclaw
             ext: tar.gz
             ndk: true
-          - os: windows-latest
+          - os: windows-22.04
             target: x86_64-pc-windows-msvc
             artifact: zeroclaw.exe
             ext: zip
@@ -237,7 +237,7 @@ jobs:
   publish:
     name: Publish Stable Release
     needs: [validate, release-notes, build]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
@@ -274,12 +274,12 @@ jobs:
             --repo "${{ github.repository }}" \
             --title "$TAG" \
             --notes-file release-notes.md \
-            --latest
+            --22.04
 
   crates-io:
     name: Publish to crates.io
     needs: [validate, publish]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
@@ -321,7 +321,7 @@ jobs:
   redeploy-website:
     name: Trigger Website Redeploy
     needs: [publish]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Trigger website redeploy
         env:
@@ -336,7 +336,7 @@ jobs:
   docker:
     name: Push Docker Image
     needs: [validate, build]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
@@ -392,7 +392,7 @@ jobs:
             ZEROCLAW_CARGO_FEATURES=channel-matrix
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.validate.outputs.tag }}
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:22.04
           platforms: linux/amd64,linux/arm64
 
       - name: Build and push Debian compatibility image
